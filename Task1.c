@@ -4,6 +4,7 @@ void execmd(char **av);
  * main - Creates a simple shell
  * @ac: number of arguments
  *@av: The arguments
+ * Return: value of the last executed command
  */
 int main(int ac, char **av)
 {
@@ -32,7 +33,7 @@ int main(int ac, char **av)
 			perror("no memory");
 			return (-1);
 		}
-		strcpy (buffer2, buffer);
+		strcpy(buffer2, buffer);
 		split = strtok(buffer, del);
 
 		while (split != NULL)
@@ -65,6 +66,7 @@ int main(int ac, char **av)
 void execmd(char **av)
 {
 	char *md = NULL;
+
 	if (av)
 	{
 		md = av[0];

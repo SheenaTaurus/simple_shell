@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-ssize_t getline(char **restrict lineptr, size_t *restrict n,FILE *restrict stream);
+ssize_t getline(char **lineptr, size_t *n, FILE *stream);
 int main(int ac, char **av);
-char *strtok(char *restrict str, const char *restrict delim);
+char *strtok(char *str, const char *delim);
 void execmd(char **av);
 #endif
