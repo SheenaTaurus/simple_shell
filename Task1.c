@@ -15,7 +15,9 @@ int main(int ac, char **av)
 	char *split;
 	char *del = " \n";
 	int splitcount = 0;
-	int i,j;
+	int i;
+	pid_t pidchild;
+	int status;
 	(void)ac;
 
 	while (1)
@@ -36,7 +38,6 @@ int main(int ac, char **av)
 		if (buffer2 == NULL)
 		{
 			perror("no memory");
-			free(buffer);
 			exit(1);
 		}
 		strcpy(buffer2, buffer);
@@ -48,36 +49,31 @@ int main(int ac, char **av)
 			split = strtok(NULL, del);
 		}
 		splitcount++;
-		av = malloc(sizeof(char *) * splitcount);
-		if (av == NULL)
-		{
-			perror("no memory");
-			free(buffer2);
-			free(buffer);
-			exit(1);
-		}
-
 		split = strtok(buffer2, del);
+		av = malloc(sizeof(char *) * splitcount);
 		for (i = 0; split != NULL; i++)
 		{
 			av[i] = malloc(sizeof(char) * strlen(split));
-			if (av[i] == NULL)
-			{
-				perror("no memory");
-				for (j = 0; j < i; j++)
-				{
-					free(av[j]);
-				}
-				free(av);
-				free(buffer2);
-				free(buffer);
-				exit(1);
-			}
 			strcpy(av[i], split);
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
-		execmd(av);
+
+		pidchild = fork();
+		if (pidchild == -1)
+		{
+			perror("fork fail");
+			exit(1);
+		}
+		if (pidchild == 0)
+		{
+			execmd(av);
+			exit(0);
+		}
+		else
+		{
+			wait(&status);
+		}
 		free(av);
 	}
 	free(buffer2);
