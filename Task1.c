@@ -24,8 +24,13 @@ int main(int ac, char **av)
 		totalread = getline(&buffer, &n, stdin);
 		if (totalread == -1)
 		{
+			if (stdin)
+			{
+				printf("\n");
+				exit(0);
+			}
 			perror("exiting\n");
-			exit (-1);
+			exit (1);
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
@@ -58,9 +63,13 @@ int main(int ac, char **av)
 		av[i] = NULL;
 		execmd(av);
 		free(av);
+		free(buffer2);
+		free(buffer);
+		buffer = NULL;
+		buffer2 = NULL;
+		n = 0;
+		splitcount = 0;
 	}
-	free(buffer2);
-	free(buffer);
 
 	return (0);
 }
