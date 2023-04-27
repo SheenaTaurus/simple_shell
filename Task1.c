@@ -29,6 +29,7 @@ int main(int ac, char **av)
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
+			free(buffer);
 			exit(0);
 		}
 		buffer2 = malloc(sizeof(char) * totalread);
