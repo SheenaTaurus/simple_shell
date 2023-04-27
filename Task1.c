@@ -25,7 +25,7 @@ int main(int ac, char **av)
 		if (totalread == -1)
 		{
 			perror("exiting\n");
-			exit(EXIT_FAILURE);
+			return (-1);
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
@@ -34,40 +34,34 @@ int main(int ac, char **av)
 		buffer2 = malloc(sizeof(char) * totalread);
 		if (buffer2 == NULL)
 		{
-			perror("failed to allocate memory");
+			perror("no memory");
 			exit(1);
 		}
 		strcpy(buffer2, buffer);
 		split = strtok(buffer, del);
+
 		while (split != NULL)
 		{
 			splitcount++;
 			split = strtok(NULL, del);
 		}
-		splitcount ++;
-		av = malloc(splitcount * sizeof(char *));
-		split = strtok(buffer2, del);
+		splitcount++;
+		av = malloc(sizeof(char *) * splitcount);
 
+		split = strtok(buffer2, del);
 		for (i = 0; split != NULL; i++)
 		{
 			av[i] = malloc(sizeof(char) * strlen(split));
-			if (av[i] == NULL)
-			{
-				perror("memoery failed");
-				exit(EXIT_FAILURE);
-			}
 			strcpy(av[i], split);
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
 		execmd(av);
 		free(av);
-		free(buffer2);
-		free(buffer);
-		buffer = NULL;
-		buffer2 = NULL;
-		n = 0;
 	}
+	free(buffer2);
+	free(buffer);
+
 	return (0);
 }
 /**
@@ -77,28 +71,13 @@ int main(int ac, char **av)
 void execmd(char **av)
 {
 	char *md = NULL;
-	pid_t child;
 
 	if (av)
 	{
-		child = fork();
-		if (child == -1)
+		md = av[0];
+		if (execve(md, av, NULL) == -1)
 		{
-			perror("fork failed");
-			exit(1);
-		}
-		if (child == 0)
-		{
-			md = av[0];
-			if (execve(md, av, NULL) == -1)
-			{
-				printf("%s: command not found\n", md);
-			}
-			exit(0);
-		}
-		else
-		{
-			wait(NULL);
+			perror("invalid");
 		}
 	}
 }
