@@ -15,7 +15,7 @@ int main(int ac, char **av)
 	char *split;
 	char *del = " \n";
 	int splitcount = 0;
-	int i;
+	int i,j;
 	(void)ac;
 
 	while (1)
@@ -29,7 +29,6 @@ int main(int ac, char **av)
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
-			free(buffer2);
 			free(buffer);
 			exit(0);
 		}
@@ -37,6 +36,7 @@ int main(int ac, char **av)
 		if (buffer2 == NULL)
 		{
 			perror("no memory");
+			free(buffer);
 			exit(1);
 		}
 		strcpy(buffer2, buffer);
@@ -49,23 +49,38 @@ int main(int ac, char **av)
 		}
 		splitcount++;
 		av = malloc(sizeof(char *) * splitcount);
+		if (av == NULL)
+		{
+			perror("no memory");
+			free(buffer2);
+			free(buffer);
+			exit(1);
+		}
 
 		split = strtok(buffer2, del);
 		for (i = 0; split != NULL; i++)
 		{
 			av[i] = malloc(sizeof(char) * strlen(split));
+			if (av[i] == NULL)
+			{
+				perror("no memory");
+				for (j = 0; j < i; j++)
+				{
+					free(av[j]);
+				}
+				free(av);
+				free(buffer2);
+				free(buffer);
+				exit(1);
+			}
 			strcpy(av[i], split);
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
 		execmd(av);
-		for (i = 0; i < splitcount; i++)
-		{
-			free(av[i]);
-		}
 		free(av);
-		free(buffer2);
 	}
+	free(buffer2);
 	free(buffer);
 
 	return (0);
