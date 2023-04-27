@@ -64,8 +64,8 @@ int main(int ac, char **av)
 			free(av[i]);
 		}
 		free(av);
+		free(buffer2);
 	}
-	free(buffer2);
 	free(buffer);
 
 	return (0);
