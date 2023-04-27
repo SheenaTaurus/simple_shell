@@ -16,8 +16,6 @@ int main(int ac, char **av)
 	char *del = " \n";
 	int splitcount = 0;
 	int i;
-	pid_t pidchild;
-	int status;
 	(void)ac;
 
 	while (1)
@@ -31,14 +29,13 @@ int main(int ac, char **av)
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
-			free(buffer);
 			exit(0);
 		}
 		buffer2 = malloc(sizeof(char) * totalread);
 		if (buffer2 == NULL)
 		{
 			perror("no memory");
-			exit(1);
+			exit (1);
 		}
 		strcpy(buffer2, buffer);
 		split = strtok(buffer, del);
@@ -49,8 +46,9 @@ int main(int ac, char **av)
 			split = strtok(NULL, del);
 		}
 		splitcount++;
-		split = strtok(buffer2, del);
 		av = malloc(sizeof(char *) * splitcount);
+
+		split = strtok(buffer2, del);
 		for (i = 0; split != NULL; i++)
 		{
 			av[i] = malloc(sizeof(char) * strlen(split));
@@ -58,25 +56,9 @@ int main(int ac, char **av)
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
-
-		pidchild = fork();
-		if (pidchild == -1)
-		{
-			perror("fork fail");
-			exit(1);
-		}
-		if (pidchild == 0)
-		{
-			execmd(av);
-			exit(0);
-		}
-		else
-		{
-			wait(&status);
-		}
+		execmd(av);
 		free(av);
 	}
-	printf("\n");
 	free(buffer2);
 	free(buffer);
 
@@ -99,4 +81,3 @@ void execmd(char **av)
 		}
 	}
 }
-
