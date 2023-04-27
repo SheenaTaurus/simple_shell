@@ -76,6 +76,7 @@ int main(int ac, char **av)
 		}
 		free(av);
 	}
+	printf("\n");
 	free(buffer2);
 	free(buffer);
 
