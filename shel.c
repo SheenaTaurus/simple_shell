@@ -1,11 +1,10 @@
-#include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 void execmd(char **av);
-/**
- * main - Creates a simple shell
- * @ac: number of arguments
- *@av: The arguments
- * Return: value of the last executed command
- */
 int main(int ac, char **av)
 {
 	char *prompt = "(simpleshell)$";
@@ -18,20 +17,16 @@ int main(int ac, char **av)
 	int i;
 	(void)ac;
 
-	while (1)
-	{
-		if (!isatty(STDIN_FILENO)) 
-		{
-			/* Input is coming from a pipe */
-			if (fgets(buffer, sizeof(buffer), stdin) == NULL) 
-			{
-				perror("error reading input");
-				exit(1);
-			}
+	if (!isatty(STDIN_FILENO)) {
+		/* Input is coming from a pipe */
+		if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+			perror("error reading input");
+			exit(1);
 		}
-	       	else 
+	} else {
+		/* Input is coming from a terminal */
+		while (1)
 		{
-			/* Input is coming from a terminal */
 			printf("%s ", prompt);
 			totalread = getline(&buffer, &n, stdin);
 			if (totalread == -1)
@@ -47,7 +42,7 @@ int main(int ac, char **av)
 			if (buffer2 == NULL)
 			{
 				perror("no memory");
-				exit(1);
+				exit (1);
 			}
 			strcpy(buffer2, buffer);
 			split = strtok(buffer, del);
@@ -72,10 +67,10 @@ int main(int ac, char **av)
 			free(av);
 			free(buffer2);
 		}
-		free(buffer);
-		buffer = NULL;
-		n = 0;
 	}
+	free(buffer);
+
+	return (0);
 }
 void execmd(char **av)
 {
