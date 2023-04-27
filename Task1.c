@@ -1,6 +1,11 @@
 #include "main.h"
 void execmd(char **av);
-
+/**
+ * main - Creates a simple shell
+ * @ac: number of arguments
+ *@av: The arguments
+ * Return: value of the last executed command
+ */
 int main(int ac, char **av)
 {
 	char *prompt = "(simpleshell)$";
@@ -15,63 +20,54 @@ int main(int ac, char **av)
 
 	while (1)
 	{
-		if (!isatty(STDIN_FILENO))
+		printf("%s ", prompt);
+		totalread = getline(&buffer, &n, stdin);
+		if (totalread == -1)
 		{
-			/* Input is coming from a pipe */
-			if (fgets(buffer, sizeof(buffer), stdin) == NULL)
-			{
-				perror("error reading input");
-				exit(1);
-			}
+			perror("exiting\n");
+			return (-1);
 		}
-		else
+		if (strcmp(buffer, "exit\n") == 0)
 		{
-			/* Input is coming from a terminal */
-			printf("%s ", prompt);
-			totalread = getline(&buffer, &n, stdin);
-			if (totalread == -1)
-			{
-				perror("exiting\n");
-				return (-1);
-			}
-			if (strcmp(buffer, "exit\n") == 0)
-			{
-				exit(0);
-			}
-			buffer2 = malloc(sizeof(char) * strlen(buffer) + 1);
-			if (buffer2 == NULL)
-			{
-				perror("no memory");
-				exit(1);
-			}
-			strcpy(buffer2, buffer);
-			split = strtok(buffer, del);
+			exit(0);
+		}
+		buffer2 = malloc(sizeof(char) * totalread);
+		if (buffer2 == NULL)
+		{
+			perror("no memory");
+			exit (1);
+		}
+		strcpy(buffer2, buffer);
+		split = strtok(buffer, del);
 
-			while (split != NULL)
-			{
-				splitcount++;
-				split = strtok(NULL, del);
-			}
+		while (split != NULL)
+		{
 			splitcount++;
-			av = malloc(sizeof(char *) * splitcount);
-
-			split = strtok(buffer2, del);
-			for (i = 0; split != NULL; i++)
-			{
-				av[i] = malloc(sizeof(char) * strlen(split) + 1);
-				strcpy(av[i], split);
-				split = strtok(NULL, del);
-			}
-			av[i] = NULL;
-			execmd(av);
-			free(av);
-			free(buffer2);
+			split = strtok(NULL, del);
 		}
-		free(buffer);
-		buffer = NULL;
-		n = 0;
+		splitcount++;
+		av = malloc(sizeof(char *) * splitcount);
+
+		split = strtok(buffer2, del);
+		for (i = 0; split != NULL; i++)
+		{
+			av[i] = malloc(sizeof(char) * strlen(split));
+			strcpy(av[i], split);
+			split = strtok(NULL, del);
+		}
+		av[i] = NULL;
+		execmd(av);
+		free(av);
 	}
+	free(buffer2);
+	free(buffer);
+
+	return (0);
 }
+/**
+ * execmd - A function which gets the env
+ * @av: The argument
+ */
 void execmd(char **av)
 {
 	char *md = NULL;
