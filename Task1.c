@@ -1,11 +1,6 @@
 #include "main.h"
 void execmd(char **av);
-/**
- * main - Creates a simple shell
- * @ac: number of arguments
- *@av: The arguments
- * Return: value of the last executed command
- */
+
 int main(int ac, char **av)
 {
 	char *prompt = "(simpleshell)$";
@@ -77,10 +72,6 @@ int main(int ac, char **av)
 		n = 0;
 	}
 }
-/**
- * execmd - A function which gets the env
- * @av: The argument
- */
 void execmd(char **av)
 {
 	char *md = NULL;
