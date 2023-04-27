@@ -59,6 +59,10 @@ int main(int ac, char **av)
 		}
 		av[i] = NULL;
 		execmd(av);
+		for (i = 0; i < splitcount; i++)
+		{
+			free(av[i]);
+		}
 		free(av);
 	}
 	free(buffer2);
