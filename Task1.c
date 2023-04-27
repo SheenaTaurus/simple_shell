@@ -1,5 +1,5 @@
 #include "main.h"
-void execmd(char **av)
+void execmd(char **av);
 /**
  * main - Creates a simple shell
  * @ac: number of arguments
@@ -29,19 +29,19 @@ int main(int ac, char **av)
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
-			exit(EXIT_SUCCESS);
+			exit(0);
 		}
 		buffer2 = malloc(sizeof(char) * totalread);
 		if (buffer2 == NULL)
 		{
 			perror("failed to allocate memory");
-			exit(EXIT_FAILURE);
+			exit(1);
 		}
 		strcpy(buffer2, buffer);
 		split = strtok(buffer, del);
 		while (split != NULL)
 		{
-			splintcount++;
+			splitcount++;
 			split = strtok(NULL, del);
 		}
 		splitcount ++;
@@ -61,19 +61,14 @@ int main(int ac, char **av)
 		}
 		av[i] = NULL;
 		execmd(av);
-
-		for (i = 0; i < splitcount - 1; 1++)
-		{
-			free(av[i]);
-		}
 		free(av);
 		free(buffer2);
 		free(buffer);
 		buffer = NULL;
+		buffer2 = NULL;
 		n = 0;
-		splitcount = 0;
 	}
-	return (EXIT_SUCCESS);
+	return (0);
 }
 /**
  * execmd - A function which gets the env
@@ -82,12 +77,28 @@ int main(int ac, char **av)
 void execmd(char **av)
 {
 	char *md = NULL;
+	pid_t child;
+
 	if (av)
 	{
-		md = av[0];
-		if (execve(md, av, NULL) == -1)
+		child = fork();
+		if (child == -1)
 		{
-			printf("%s: command not found\n", md);
+			perror("fork failed");
+			exit(1);
+		}
+		if (child == 0)
+		{
+			md = av[0];
+			if (execve(md, av, NULL) == -1)
+			{
+				printf("%s: command not found\n", md);
+			}
+			exit(0);
+		}
+		else
+		{
+			wait(NULL);
 		}
 	}
 }
