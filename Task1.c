@@ -25,7 +25,7 @@ int main(int ac, char **av)
 		if (totalread == -1)
 		{
 			perror("exiting\n");
-			return (-1);
+			exit (-1);
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
@@ -78,6 +78,7 @@ void execmd(char **av)
 		if (execve(md, av, NULL) == -1)
 		{
 			perror("invalid");
+			exit(1);
 		}
 	}
 }
