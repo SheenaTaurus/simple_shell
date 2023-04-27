@@ -27,6 +27,10 @@ int main(int ac, char **av)
 			perror("exiting\n");
 			return (-1);
 		}
+		if (strcmp(buffer, "exit\n") == 0)
+		{
+			exit(0);
+		}
 		buffer2 = malloc(sizeof(char) * totalread);
 		if (buffer2 == NULL)
 		{
