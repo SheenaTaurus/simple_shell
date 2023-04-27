@@ -38,7 +38,7 @@ int main(int ac, char **av)
 		if (buffer2 == NULL)
 		{
 			perror("no memory");
-			exit (1);
+			exit(1);
 		}
 		strcpy(buffer2, buffer);
 		split = strtok(buffer, del);
