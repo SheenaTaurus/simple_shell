@@ -20,16 +20,16 @@ int main(int ac, char **av)
 
 	while (1)
 	{
-		if (!isatty(STDIN_FILENO)) 
+		if (!isatty(STDIN_FILENO))
 		{
 			/* Input is coming from a pipe */
-			if (fgets(buffer, sizeof(buffer), stdin) == NULL) 
+			if (fgets(buffer, sizeof(buffer), stdin) == NULL)
 			{
 				perror("error reading input");
 				exit(1);
 			}
 		}
-	       	else 
+		else
 		{
 			/* Input is coming from a terminal */
 			printf("%s ", prompt);
@@ -77,6 +77,10 @@ int main(int ac, char **av)
 		n = 0;
 	}
 }
+/**
+ * execmd - A function which gets the env
+ * @av: The argument
+ */
 void execmd(char **av)
 {
 	char *md = NULL;
