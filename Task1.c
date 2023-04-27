@@ -8,7 +8,7 @@ void execmd(char **av);
  */
 int main(int ac, char **av)
 {
-	char *prompt = "(simpleshell)$";
+	char *prompt = "$";
 	ssize_t totalread;
 	char *buffer = NULL, *buffer2 = NULL;
 	size_t n = 0;
