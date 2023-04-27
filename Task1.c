@@ -1,5 +1,5 @@
 #include "main.h"
-void execmd(char **av);
+
 /**
  * main - Creates a simple shell
  * @ac: number of arguments
@@ -10,12 +10,14 @@ int main(int ac, char **av)
 {
 	char *prompt = "(simpleshell)$";
 	ssize_t totalread;
-	char *buffer = NULL, *buffer2 = NULL;
+	char *buffer = NULL;
 	size_t n = 0;
 	char *split;
 	char *del = " \n";
 	int splitcount = 0;
 	int i;
+	pid_t child;
+	int status;
 	(void)ac;
 
 	while (1)
@@ -24,71 +26,58 @@ int main(int ac, char **av)
 		totalread = getline(&buffer, &n, stdin);
 		if (totalread == -1)
 		{
-			if (stdin)
-			{
-				printf("\n");
-				exit(0);
-			}
 			perror("exiting\n");
-			exit (1);
+			return (-1);
 		}
-		if (strcmp(buffer, "exit\n") == 0)
-		{
-			exit(0);
-		}
-		buffer2 = malloc(sizeof(char) * totalread);
-		if (buffer2 == NULL)
-		{
-			perror("no memory");
-			exit (1);
-		}
-		strcpy(buffer2, buffer);
+		buffer[strcspn(buffer, "\n")]= 0;
 		split = strtok(buffer, del);
 
-		while (split != NULL)
+		while (!split)
+		{
+			continue;
+		}
+		splitcount = 1;
+		while (strtok(NULL, del))
 		{
 			splitcount++;
-			split = strtok(NULL, del);
 		}
-		splitcount++;
-		av = malloc(sizeof(char *) * splitcount);
+		av = malloc((splitcount + 1) * sizeof(char *));
 
-		split = strtok(buffer2, del);
-		for (i = 0; split != NULL; i++)
+		while (!av)
 		{
-			av[i] = malloc(sizeof(char) * strlen(split));
-			strcpy(av[i], split);
-			split = strtok(NULL, del);
+			perror("memoery not alloacated");
+			exit(EXIT_FAILURE);
+		}
+
+		i = 0;
+		av[i++] = split;
+
+		while ((split = strtok(NULL, del)))
+		{
+			av[i++] = split;
 		}
 		av[i] = NULL;
-		execmd(av);
-		free(av);
-		free(buffer2);
-		free(buffer);
-		buffer = NULL;
-		buffer2 = NULL;
-		n = 0;
-		splitcount = 0;
-	}
 
-	return (0);
-}
-/**
- * execmd - A function which gets the env
- * @av: The argument
- */
-void execmd(char **av)
-{
-	char *md = NULL;
-
-	if (av)
-	{
-		md = av[0];
-		if (execve(md, av, NULL) == -1)
+		child = fork();
+		if (child == -1)
 		{
-			perror("invalid");
-			exit(1);
+			perror("fork failed");
+			exit(EXIT_FAILURE);
 		}
+		if (child == 0)
+		{
+			execvp(av[0], av);
+			perror("command does not exist");
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			waitpid(child, &status, 0);
+		}
+		free(av);
 	}
+
+	free(buffer);
+	return (0);
 }
 
