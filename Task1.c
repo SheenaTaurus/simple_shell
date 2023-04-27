@@ -16,20 +16,23 @@ int main(int ac, char **av)
 	char *del = " \n";
 	int splitcount = 0;
 	int i;
+	int status;
+	pid_t child;
 	(void)ac;
 
 	while (1)
 	{
 		printf("%s ", prompt);
+		fflush(stdout);
 		totalread = getline(&buffer, &n, stdin);
 		if (totalread == -1)
 		{
-			perror("exiting\n");
-			return (-1);
+			exit(0);
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
 			exit(0);
+			return (0);
 		}
 		buffer2 = malloc(sizeof(char) * totalread);
 		if (buffer2 == NULL)
@@ -56,7 +59,22 @@ int main(int ac, char **av)
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
-		execmd(av);
+		child = fork();
+		if (child == -1)
+		{
+			perror("fork fail");
+			exit(1);
+		}
+		if (child == 0)
+		{
+			execmd(av);
+			exit(0);
+		}
+		else
+		{
+			wait(&status);
+		}
+
 		free(av);
 	}
 	free(buffer2);
