@@ -6,15 +6,32 @@
  */
 void execmd(char **av)
 {
-	char *md = NULL, *actual_command = NULL;
+	pid_t pid;
+	char *actual_command = get_path(av[0]);
 
-	if (av)
+	if (actual_command == NULL)
 	{
-		md = av[0];
-		actual_command = get_path(md);
-		if (execve(actual_command, av, NULL) == -1)
-		{
-			perror("invalid");
-		}
+		printf("%s : not found\n", av[0]);
+		return;
 	}
+	
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("error");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0)
+	{
+		execve(actual_command, av, NULL);
+		perror("error executing");
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		wait(NULL);
+	}
+	free(actual_command);
+
 }
+

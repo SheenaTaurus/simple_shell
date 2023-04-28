@@ -24,18 +24,18 @@ int main(int ac, char **av)
 		totalread = getline(&buffer, &n, stdin);
 		if (totalread == -1)
 		{
-			perror("exiting\n");
-			return (0);
+			perror("exiting");
+			exit(EXIT_FAILURE);
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 		buffer2 = malloc(sizeof(char) * totalread);
 		if (buffer2 == NULL)
 		{
 			perror("no memory");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		strcpy(buffer2, buffer);
 		split = strtok(buffer, del);
@@ -47,25 +47,29 @@ int main(int ac, char **av)
 		}
 		splitcount++;
 		av = malloc(sizeof(char *) * splitcount);
+		if (av == NULL)
+		{
+			perror("not allocated");
+			exit(EXIT_FAILURE);
+		}
 
 		split = strtok(buffer2, del);
 		for (i = 0; split != NULL; i++)
 		{
-			av[i] = malloc(sizeof(char) * (strlen(split) + 1));
+			av[i] = malloc(sizeof(char) * strlen(split));
+			if (av[i] == NULL)
+			{
+				perror("not allocated");
+				exit(EXIT_FAILURE);
+			}
 			strcpy(av[i], split);
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
 		execmd(av);
-		for (i = 0; av[i] != NULL; i++)
-		{
-			free(av[i]);
-		}
+		free(buffer2);
 		free(av);
-		splitcount = 0;
 	}
-	free(buffer2);
-	free(buffer);
 
 	return (0);
 }
