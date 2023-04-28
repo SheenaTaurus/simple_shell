@@ -6,12 +6,13 @@
  */
 void execmd(char **av)
 {
-	char *md = NULL;
+	char *md = NULL, *actual_command = NULL;
 
 	if (av)
 	{
 		md = av[0];
-		if (execve(md, av, NULL) == -1)
+		actual_command = get_path(md);
+		if (execve(actual_command, av, NULL) == -1)
 		{
 			perror("invalid");
 		}
