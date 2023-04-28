@@ -25,7 +25,7 @@ int main(int ac, char **av)
 		if (totalread == -1)
 		{
 			perror("exiting\n");
-			return (-1);
+			return (0);
 		}
 		if (strcmp(buffer, "exit\n") == 0)
 		{
@@ -51,12 +51,16 @@ int main(int ac, char **av)
 		split = strtok(buffer2, del);
 		for (i = 0; split != NULL; i++)
 		{
-			av[i] = malloc(sizeof(char) * strlen(split));
+			av[i] = malloc(sizeof(char) * (strlen(split) + 1));
 			strcpy(av[i], split);
 			split = strtok(NULL, del);
 		}
 		av[i] = NULL;
 		execmd(av);
+		for (i = 0; av[i] != NULL; i++)
+		{
+			free(av[i]);
+		}
 		free(av);
 	}
 	free(buffer2);
